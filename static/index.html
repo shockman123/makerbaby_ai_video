@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>创客宝贝 AI Video - Agnes 视频工作流</title>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <link rel="stylesheet" href="/css/style.css?v=20260625b">
+</head>
+<body>
+    <div id="login-screen">
+        <div class="login-box">
+            <div class="login-logo">
+                <img src="/logo.png" alt="创客宝贝">
+                <h1>创客宝贝 AI Video</h1>
+            </div>
+            <p>输入您的 API Key 开始使用</p>
+            <input type="password" id="api-key-input" placeholder="Agnes API Key (sk-xxxxxxxxxxxxxxxx)">
+            <input type="password" id="qwen-key-input" placeholder="千问 API Key (sk-xxxxxxxxxxxxxxxx)">
+            <button onclick="login()">进入工作流</button>
+        </div>
+    </div>
+
+    <div id="app">
+        <div class="app-header">
+            <div class="header-logo">
+                <img src="/logo.png" alt="创客宝贝">
+                <span>创客宝贝 AI Video</span>
+            </div>
+        </div>
+        <div class="asset-panel">
+            <h3>📁 资产库</h3>
+            <div class="asset-list" id="asset-list"></div>
+        </div>
+
+        <div class="toolbar">
+            <button onclick="uploadAsset()">📤 添加资产</button>
+            <button class="primary" onclick="addTextImageNode()">🖼️ 文生图</button>
+            <button onclick="addVideoEditNode()">✂️ 视频编辑</button>
+        </div>
+
+        <div id="canvas-container">
+            <div id="canvas">
+                <div id="grid-bg"></div>
+                <svg id="connections-svg"></svg>
+            </div>
+        </div>
+
+        <div class="api-key-badge" id="api-key-badge"></div>
+    </div>
+
+    <button class="qwen-key-btn" id="qwen-key-btn" onclick="toggleQwenKey()">🔑 千问密钥</button>
+
+    <script src="/js/app.js?v=20260625b"></script>
+</body>
+</html>

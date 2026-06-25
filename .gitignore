@@ -1,0 +1,29 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.env
+
+# 资产文件
+assets/*.mp4
+assets/*.png
+assets/assets.json
+assets/voices.json
+
+# 测试文件
+test_qwen_video.mp4
+check_video.py
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# 系统文件
+Thumbs.db
+*.log
