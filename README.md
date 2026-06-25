@@ -1,4 +1,6 @@
 # 创客宝贝 AI Video 工作流
+<img width="2112" height="1374" alt="image" src="https://github.com/user-attachments/assets/2a1f468f-d3c1-4468-9e2d-9c7a00f8c069" />
+
 
 基于 Agnes 和千问（Qwen）AI 的可视化视频工作流工具，支持图片生成、视频生成、视频编辑等功能。
 
