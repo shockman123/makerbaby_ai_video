@@ -1,3 +1,4 @@
+# Python
 __pycache__/
 *.pyc
 *.pyo
@@ -6,12 +7,11 @@ __pycache__/
 venv/
 env/
 .env
+*.egg-info/
 
-# 资产文件
-assets/*.mp4
-assets/*.png
-assets/assets.json
-assets/voices.json
+# 资产文件 - 所有生成的内容都不上传
+assets/*
+!assets/.gitkeep
 
 # 测试文件
 test_qwen_video.mp4
@@ -27,3 +27,7 @@ check_video.py
 # 系统文件
 Thumbs.db
 *.log
+
+# 临时文件
+*.tmp
+*.bak
