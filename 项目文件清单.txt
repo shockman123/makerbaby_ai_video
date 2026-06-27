@@ -1,0 +1,30 @@
+创客宝贝 AI Video 工作流 - 项目文件清单
+==========================================
+
+需要上传到 GitHub 的文件（按目录结构）：
+
+📁 项目根目录/
+├── .gitignore                    ✅ 必须上传
+├── README.md                     ✅ 必须上传（项目说明）
+├── requirements.txt              ✅ 必须上传（依赖列表）
+├── app.py                        ✅ 必须上传（后端主程序）
+└── agnes_api_guide.md            ✅ 上传（API文档，可选）
+
+📁 static/
+├── index.html                    ✅ 必须上传（前端入口）
+├── favicon.png                   ✅ 必须上传（浏览器图标）
+├── logo.png                      ✅ 必须上传（项目Logo）
+├── 📁 css/
+│   └── style.css                 ✅ 必须上传（样式）
+└── 📁 js/
+    └── app.js                    ✅ 必须上传（前端逻辑）
+
+📁 assets/
+└── .gitkeep                      ✅ 上传（占位文件，保留目录）
+
+❌ 不需要上传：
+- assets/ 目录下的所有 .mp4, .png, .mp3 文件
+- test_qwen_video.mp4
+- check_video.py
+- __pycache__/ 目录
+- .git/ 目录

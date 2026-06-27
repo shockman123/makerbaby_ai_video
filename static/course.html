@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>创客宝贝 AI Video 课程</title>
+<style>
+/* ========== 全局变量与基础样式 ========== */
+:root{
+    --primary:#6366f1;
+    --primary-dark:#4f46e5;
+    --secondary:#8b5cf6;
+    --accent:#06b6d4;
+    --success:#10b981;
+    --warning:#f59e0b;
+    --danger:#ef4444;
+    --pink:#ec4899;
+    --light:#f8fafc;
+    --light2:#eef2ff;
+    --dark:#1e293b;
+    --darker:#0f172a;
+    --text:#334155;
+    --text-muted:#64748b;
+    --card:#ffffff;
+    --radius:18px;
+    --shadow:0 10px 30px rgba(30,41,59,.08);
+    --shadow-lg:0 20px 50px rgba(99,102,241,.18);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+    font-family:'PingFang SC','Microsoft YaHei','Segoe UI',sans-serif;
+    color:var(--text);
+    overflow-x:hidden;
+    background:var(--light);
+    line-height:1.7;
+}
+img{max-width:100%;display:block;border-radius:12px}
+a{text-decoration:none;color:inherit}
+
+/* ========== 顶部进度条 ========== */
+.progress-bar{
+    position:fixed;top:0;left:0;height:5px;width:0;
+    background:linear-gradient(90deg,var(--primary),var(--secondary),var(--accent));
+    z-index:9999;transition:width .2s ease;
+    box-shadow:0 0 12px rgba(99,102,241,.6);
+}
+
+/* ========== 顶部导航栏 ========== */
+.nav-bar{
+    position:fixed;top:0;left:0;right:0;z-index:1000;
+    background:rgba(255,255,255,.85);
+    backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);
+    box-shadow:0 2px 20px rgba(0,0,0,.05);
+    padding:14px 28px;transition:all .3s;
+}
+.nav-bar.scrolled{padding:8px 28px;box-shadow:0 6px 30px rgba(0,0,0,.1)}
+.nav-container{max-width:1300px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+.nav-logo{font-size:1.25rem;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:10px}
+.nav-logo-img{max-width:48px;max-height:36px;width:auto;height:auto;border-radius:8px;object-fit:contain}
+.nav-logo .dot{width:14px;height:14px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--pink));box-shadow:0 0 12px var(--primary)}
+.nav-links{display:flex;gap:6px;list-style:none;flex-wrap:wrap}
+.nav-links a{color:var(--text-muted);padding:8px 14px;border-radius:25px;font-size:.88rem;font-weight:600;transition:all .25s}
+.nav-links a:hover{background:rgba(99,102,241,.1);color:var(--primary)}
+.nav-links a.active{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;box-shadow:0 4px 15px rgba(99,102,241,.35)}
+
+/* ========== 右侧章节导航点 ========== */
+.chapter-nav{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:999;display:flex;flex-direction:column;gap:14px}
+.chapter-dot{width:13px;height:13px;border-radius:50%;background:rgba(99,102,241,.3);cursor:pointer;transition:all .3s;position:relative;border:2px solid transparent}
+.chapter-dot:hover{background:var(--primary);transform:scale(1.3)}
+.chapter-dot.active{background:var(--primary);transform:scale(1.45);box-shadow:0 0 16px rgba(99,102,241,.6);border-color:#fff}
+.chapter-dot::after{content:attr(data-title);position:absolute;right:26px;top:50%;transform:translateY(-50%);background:var(--dark);color:#fff;padding:6px 12px;border-radius:8px;font-size:.78rem;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .25s}
+.chapter-dot:hover::after{opacity:1}
+
+/* ========== Hero 首页 ========== */
+.hero{
+    min-height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    background:radial-gradient(ellipse at top,#312e81 0%,#1e1b4b 45%,#0f172a 100%);
+    color:#fff;text-align:center;position:relative;overflow:hidden;padding:80px 20px 60px;
+}
+.stars,.stars2{position:absolute;inset:0;background-repeat:repeat;animation:twinkle 6s ease-in-out infinite}
+.stars{background-image:radial-gradient(2px 2px at 20px 30px,#fff,transparent),radial-gradient(1px 1px at 90px 40px,#fff,transparent),radial-gradient(2px 2px at 160px 120px,rgba(255,255,255,.9),transparent),radial-gradient(1px 1px at 230px 80px,#fff,transparent);background-size:300px 200px}
+.stars2{background-image:radial-gradient(1px 1px at 50px 60px,rgba(165,180,252,.9),transparent),radial-gradient(2px 2px at 200px 150px,rgba(240,171,252,.8),transparent),radial-gradient(1px 1px at 280px 30px,#fff,transparent);background-size:360px 240px;animation-delay:1.5s}
+.shooting{position:absolute;width:120px;height:2px;background:linear-gradient(90deg,#fff,transparent);top:20%;left:-10%;transform:rotate(15deg);animation:shoot 5s linear infinite;opacity:0}
+.shooting.s2{top:55%;animation-delay:2.5s;animation-duration:7s}
+@keyframes shoot{0%{left:-10%;opacity:0}5%{opacity:1}40%{opacity:1}50%{left:110%;opacity:0}100%{left:110%;opacity:0}}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.55}}
+.hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(139,92,246,.35),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%);filter:blur(20px);animation:pulseGlow 6s ease-in-out infinite}
+@keyframes pulseGlow{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.6}50%{transform:translate(-50%,-50%) scale(1.15);opacity:.9}}
+.hero-content{position:relative;z-index:2}
+.hero-logo{max-width:200px;max-height:120px;width:auto;height:auto;margin:0 auto 22px;border-radius:20px;background:rgba(255,255,255,.1);padding:8px;box-shadow:0 0 30px rgba(165,180,252,.2);animation:fadeInUp .8s ease;object-fit:contain}
+.hero-badge{display:inline-block;padding:8px 20px;border-radius:30px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);font-size:.9rem;letter-spacing:2px;margin-bottom:28px;backdrop-filter:blur(8px);animation:fadeInUp .8s ease}
+.hero h1{font-size:clamp(2.6rem,7vw,5.2rem);font-weight:900;margin-bottom:1.4rem;background:linear-gradient(135deg,#a5b4fc 0%,#f0abfc 50%,#67e8f9 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:fadeInUp 1s ease;text-shadow:0 0 80px rgba(165,180,252,.3);line-height:1.15}
+.hero p{font-size:clamp(1.05rem,2.4vw,1.6rem);opacity:.92;margin-bottom:2.6rem;max-width:760px;line-height:1.7;animation:fadeInUp 1s ease .25s both}
+.hero-buttons{animation:fadeInUp 1s ease .5s both;display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.hero-btn{display:inline-block;padding:15px 36px;border-radius:50px;font-size:1.08rem;font-weight:700;transition:all .3s;cursor:pointer;border:none}
+.hero-btn.primary{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;box-shadow:0 12px 32px rgba(99,102,241,.45)}
+.hero-btn.ghost{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(8px)}
+.hero-btn:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(99,102,241,.55)}
+.hero-btn.ghost:hover{background:rgba(255,255,255,.2)}
+.scroll-indicator{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.6);font-size:.85rem;display:flex;flex-direction:column;align-items:center;gap:8px;animation:bounce 2s infinite;z-index:2}
+.scroll-indicator .arrow{width:24px;height:24px;border-right:2px solid rgba(255,255,255,.6);border-bottom:2px solid rgba(255,255,255,.6);transform:rotate(45deg)}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bounce{0%,20%,50%,80%,100%{transform:translateX(-50%) translateY(0)}40%{transform:translateX(-50%) translateY(-14px)}60%{transform:translateX(-50%) translateY(-7px)}}
+
+/* ========== 章节通用 ========== */
+.chapter{padding:110px 28px 90px;position:relative}
+.chapter:nth-of-type(even){background:var(--light)}
+.chapter:nth-of-type(odd){background:#fff}
+.chapter-container{max-width:1200px;margin:0 auto;width:100%;opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.chapter-container.visible{opacity:1;transform:translateY(0)}
+.chapter-header{text-align:center;margin-bottom:60px}
+.chapter-tag{display:inline-block;padding:6px 18px;border-radius:30px;background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.12));color:var(--primary);font-size:.82rem;font-weight:700;letter-spacing:2px;margin-bottom:18px}
+.chapter-title{font-size:clamp(2rem,4.5vw,3.2rem);font-weight:900;color:var(--dark);margin-bottom:14px;line-height:1.2}
+.chapter-title .grad{background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.chapter-subtitle{font-size:1.15rem;color:var(--text-muted);max-width:680px;margin:0 auto}
+
+/* ========== 第一章 时间线 ========== */
+.timeline{position:relative;max-width:1000px;margin:0 auto;padding:20px 0}
+.timeline::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--primary),var(--secondary),var(--accent));transform:translateX(-50%);border-radius:2px}
+.tl-item{position:relative;width:50%;padding:0 44px 50px 0;left:0;opacity:0;transform:translateX(-40px);transition:all .7s ease}
+.tl-item:nth-child(even){left:50%;padding:0 0 50px 44px;transform:translateX(40px)}
+.tl-item.show{opacity:1;transform:translateX(0)}
+.tl-card{background:var(--card);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow);overflow:hidden;transition:transform .3s,box-shadow .3s}
+.tl-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg)}
+.tl-card img{width:100%;height:170px;object-fit:cover;margin-bottom:14px}
+.tl-era{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.78rem;font-weight:700;color:#fff;margin-bottom:10px}
+.tl-card h3{font-size:1.25rem;color:var(--dark);margin-bottom:8px}
+.tl-card p{font-size:.95rem;color:var(--text-muted)}
+.tl-dot{position:absolute;top:18px;width:22px;height:22px;border-radius:50%;background:#fff;border:5px solid var(--primary);z-index:2;box-shadow:0 0 0 5px rgba(99,102,241,.15)}
+.tl-item:nth-child(odd) .tl-dot{right:-11px}
+.tl-item:nth-child(even) .tl-dot{left:-11px}
+.era-tools{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.era-tools span{background:var(--light2);color:var(--primary);padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600}
+
+/* ========== 第二章 文字变图像 ========== */
+.txt-to-img{display:grid;grid-template-columns:1fr auto 1fr;gap:24px;align-items:center;max-width:1000px;margin:0 auto 70px;background:var(--card);padding:30px;border-radius:var(--radius);box-shadow:var(--shadow)}
+.tti-text{background:linear-gradient(135deg,var(--light2),#fff);border:2px dashed rgba(99,102,241,.3);border-radius:14px;padding:24px;text-align:center}
+.tti-text .quote{font-size:.8rem;color:var(--text-muted);margin-bottom:10px;letter-spacing:1px}
+.tti-text .sentence{font-size:1.4rem;font-weight:700;color:var(--dark);line-height:1.5}
+.tti-arrow{font-size:2.4rem;color:var(--primary);animation:arrowPulse 1.6s ease-in-out infinite}
+@keyframes arrowPulse{0%,100%{transform:translateX(0)}50%{transform:translateX(8px)}}
+.tti-result img{width:100%;height:260px;object-fit:cover}
+
+/* ========== 流程概览 ========== */
+.pipeline-overview{display:flex;align-items:center;justify-content:center;gap:12px;max-width:900px;margin:0 auto 40px;flex-wrap:wrap}
+.pipeline-stage{background:var(--card);border-radius:var(--radius);padding:20px 24px;box-shadow:var(--shadow);text-align:center;flex:1;min-width:180px;max-width:240px;position:relative;transition:transform .3s}
+.pipeline-stage:hover{transform:translateY(-4px)}
+.pipeline-stage .ps-icon{font-size:2rem;margin-bottom:8px}
+.pipeline-stage .ps-title{font-weight:800;font-size:1rem;color:var(--dark);margin-bottom:4px}
+.pipeline-stage .ps-desc{font-size:.82rem;color:var(--primary);font-weight:700}
+.pipeline-stage .ps-note{font-size:.72rem;color:var(--text-muted);margin-top:4px}
+.pipeline-arrow{font-size:1.6rem;font-weight:800;color:var(--primary);flex-shrink:0}
+
+.flow-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;max-width:1100px;margin:0 auto}
+.flow-step{text-align:center;background:var(--card);padding:24px 16px;border-radius:var(--radius);box-shadow:var(--shadow);position:relative;transition:transform .3s}
+.flow-step:hover{transform:translateY(-6px)}
+.flow-step .num{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:1.1rem}
+.flow-step h4{color:var(--dark);margin-bottom:8px;font-size:1.05rem}
+.flow-step p{font-size:.85rem;color:var(--text-muted)}
+.flow-step::after{content:'→';position:absolute;right:-16px;top:50%;transform:translateY(-50%);color:var(--primary);font-size:1.4rem;font-weight:800;z-index:1}
+.flow-step:last-child::after{display:none}
+
+/* ========== 扩散模型交互演示 ========== */
+.diffusion-section{background:linear-gradient(135deg,#1e1b4b,#312e81);border-radius:24px;padding:40px 30px;color:#fff;max-width:1000px;margin:0 auto;box-shadow:var(--shadow-lg)}
+.diffusion-section h3{text-align:center;font-size:1.8rem;margin-bottom:8px}
+.diffusion-section .ds-sub{text-align:center;opacity:.8;margin-bottom:28px;font-size:.98rem}
+.diff-wrap{display:flex;flex-direction:column;align-items:center;gap:20px}
+.diff-canvas-row{display:flex;gap:30px;align-items:center;flex-wrap:wrap;justify-content:center}
+.diff-canvas-box{position:relative}
+.diff-canvas-box .label{position:absolute;top:-26px;left:0;font-size:.85rem;opacity:.8}
+#diffusionCanvas{border-radius:14px;background:#000;border:3px solid rgba(255,255,255,.2);cursor:crosshair}
+.diff-controls{width:100%;max-width:520px;display:flex;flex-direction:column;gap:16px}
+.diff-slider-row{display:flex;align-items:center;gap:14px}
+.diff-slider-row label{font-size:.95rem;white-space:nowrap}
+.diff-slider-row input[type=range]{flex:1;height:8px;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,var(--danger),var(--warning),var(--success));border-radius:5px;outline:none}
+.diff-slider-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--primary);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.diff-step-display{font-weight:700;font-size:1.1rem;color:#fde047;min-width:90px;text-align:center}
+.diff-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.diff-btn{padding:11px 26px;border-radius:30px;border:none;font-weight:700;font-size:.95rem;cursor:pointer;transition:all .25s}
+.diff-btn.go{background:linear-gradient(135deg,var(--success),var(--accent));color:#fff;box-shadow:0 6px 18px rgba(16,185,129,.4)}
+.diff-btn.reset{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.3)}
+.diff-btn:hover{transform:translateY(-3px)}
+.diff-hint{font-size:.85rem;opacity:.75;text-align:center}
+
+/* ========== 文本编码器演示 ========== */
+.text-encoder-demo{max-width:700px;margin:0 auto}
+.ted-input-row{display:flex;gap:12px;margin-bottom:20px}
+.ted-input{flex:1;padding:14px 18px;border:2px solid var(--light2);border-radius:14px;font-size:.95rem;outline:none;transition:border-color .3s}
+.ted-input:focus{border-color:var(--primary)}
+.ted-result{background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);min-height:120px}
+.ted-empty{color:var(--text-muted);text-align:center;font-size:.95rem}
+.ted-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.ted-tag{padding:12px 20px;border-radius:14px;font-weight:700;font-size:.88rem;color:#fff;animation:tedPop .4s ease backwards}
+.ted-tag:nth-child(1){background:linear-gradient(135deg,#6366f1,#8b5cf6);animation-delay:.1s}
+.ted-tag:nth-child(2){background:linear-gradient(135deg,#8b5cf6,#a78bfa);animation-delay:.2s}
+.ted-tag:nth-child(3){background:linear-gradient(135deg,#06b6d4,#22d3ee);animation-delay:.3s}
+.ted-tag:nth-child(4){background:linear-gradient(135deg,#10b981,#34d399);animation-delay:.4s}
+.ted-tag:nth-child(5){background:linear-gradient(135deg,#f59e0b,#fbbf24);animation-delay:.5s}
+.ted-tag:nth-child(6){background:linear-gradient(135deg,#ec4899,#f472b6);animation-delay:.6s}
+.ted-tag .tt-label{font-size:.7rem;opacity:.85;display:block;margin-bottom:3px}
+.ted-tag .tt-value{font-size:.95rem}
+@keyframes tedPop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+
+/* ========== 解码器演示（马赛克版） ========== */
+.decoder-simple{max-width:500px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:20px}
+.decoder-canvas-wrap{position:relative;background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.decoder-canvas-wrap .decoder-label{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);font-size:.8rem;font-weight:700;color:var(--primary);background:rgba(99,102,241,.1);padding:4px 14px;border-radius:14px;white-space:nowrap}
+#decoderCanvas{width:400px;height:300px;border-radius:12px;display:block;background:#111}
+.decoder-controls{width:100%;max-width:400px;display:flex;flex-direction:column;gap:14px}
+
+/* ========== 第三章 对比展示 ========== */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:24px;max-width:1100px;margin:0 auto 60px}
+.compare-col{border-radius:var(--radius);padding:26px;box-shadow:var(--shadow);position:relative}
+.compare-col.bad{background:linear-gradient(135deg,#fff,#fef2f2);border:2px solid rgba(239,68,68,.2)}
+.compare-col.good{background:linear-gradient(135deg,#fff,#f0fdf4);border:2px solid rgba(16,185,129,.2)}
+.compare-col h3{display:flex;align-items:center;gap:10px;font-size:1.3rem;margin-bottom:16px}
+.compare-col.bad h3{color:var(--danger)}
+.compare-col.good h3{color:var(--success)}
+.chat-bubble{background:#fff;border-radius:12px;padding:12px 16px;margin-bottom:10px;font-size:.9rem;box-shadow:0 2px 8px rgba(0,0,0,.05);position:relative}
+.chat-bubble.interrupted{opacity:.5;text-decoration:line-through}
+.chat-bubble .role{font-size:.75rem;font-weight:700;color:var(--primary);margin-bottom:4px}
+.flow-mini{background:#fff;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.flow-mini-node{background:linear-gradient(135deg,var(--light2),#fff);border:1px solid rgba(99,102,241,.25);border-radius:10px;padding:10px 14px;font-size:.88rem;font-weight:600;color:var(--dark);position:relative}
+.flow-mini-node::after{content:'↓';position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);color:var(--success);font-weight:800}
+.flow-mini-node:last-child::after{display:none}
+
+.platforms{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;max-width:1100px;margin:0 auto 50px}
+.platform-card{background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);transition:transform .3s}
+.platform-card:hover{transform:translateY(-8px)}
+.platform-card img{width:100%;height:160px;object-fit:cover}
+.platform-card .pc-body{padding:18px}
+.platform-card h4{font-size:1.15rem;color:var(--dark);margin-bottom:6px}
+.platform-card .pc-tag{font-size:.78rem;color:var(--text-muted);margin-bottom:10px}
+.platform-card p{font-size:.88rem;color:var(--text-muted)}
+.platform-card.ours{border:2px solid var(--primary);position:relative}
+.platform-card.ours::before{content:'我们的平台';position:absolute;top:12px;right:12px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:700;z-index:2}
+
+/* ========== 案例动画演示（第三章） ========== */
+.case-demo{background:linear-gradient(135deg,#0f172a,#1e1b4b);border-radius:24px;padding:36px 28px;color:#fff;max-width:1100px;margin:0 auto;box-shadow:var(--shadow-lg)}
+.case-demo h3{text-align:center;font-size:1.6rem;margin-bottom:6px}
+.case-demo .cd-sub{text-align:center;opacity:.75;margin-bottom:26px;font-size:.92rem}
+.case-stage{display:grid;grid-template-columns:1.4fr 1fr;gap:26px;align-items:center}
+.case-display{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:16/9}
+.case-display img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .8s ease,transform .8s ease;transform:scale(1.08)}
+.case-display img.active{opacity:1;transform:scale(1)}
+.case-display .scene-badge{position:absolute;top:12px;left:12px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);color:#fff;padding:6px 14px;border-radius:20px;font-size:.85rem;font-weight:700;z-index:3}
+.case-story{display:flex;flex-direction:column;justify-content:center;min-height:100%}
+.case-story-text{font-size:1.15rem;line-height:1.8;opacity:0;transform:translateY(20px);transition:all .6s ease;position:absolute}
+.case-story-text.active{opacity:1;transform:translateY(0);position:relative}
+.case-story-text .step-num{display:inline-block;color:var(--accent);font-weight:800;margin-right:8px}
+.case-thumbs{display:flex;gap:12px;margin-top:22px;justify-content:center}
+.case-thumb{width:90px;height:54px;border-radius:8px;overflow:hidden;cursor:pointer;border:3px solid transparent;opacity:.5;transition:all .3s;position:relative}
+.case-thumb img{width:100%;height:100%;object-fit:cover}
+.case-thumb.active{border-color:var(--accent);opacity:1;transform:scale(1.08)}
+.case-thumb .tnum{position:absolute;bottom:2px;right:4px;font-size:.7rem;color:#fff;font-weight:700;text-shadow:0 1px 3px #000}
+.case-controls{display:flex;gap:14px;justify-content:center;margin-top:24px;align-items:center;flex-wrap:wrap}
+.case-btn{padding:10px 24px;border-radius:30px;border:none;font-weight:700;cursor:pointer;transition:all .25s;font-size:.92rem}
+.case-btn.prev{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.25)}
+.case-btn.next{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;box-shadow:0 6px 18px rgba(99,102,241,.4)}
+.case-btn:disabled{opacity:.4;cursor:not-allowed}
+.case-counter{color:#fff;font-weight:700;min-width:60px;text-align:center}
+.case-video-wrap{margin-top:26px;border-radius:14px;overflow:hidden;display:none;animation:fadeInUp .8s ease}
+.case-video-wrap.show{display:block}
+.case-video-wrap video{width:100%;display:block;border-radius:14px}
+.case-video-wrap .vv-label{text-align:center;margin-bottom:10px;font-weight:700;color:#fde047}
+
+/* ========== 第四章 工具交互卡片 ========== */
+.tool-tabs{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:30px}
+.tool-tab{padding:14px 22px;border-radius:16px;background:var(--card);border:2px solid var(--light2);cursor:pointer;font-weight:700;color:var(--text-muted);transition:all .25s;display:flex;align-items:center;gap:10px;font-size:1rem;box-shadow:var(--shadow)}
+.tool-tab .ic{font-size:1.4rem}
+.tool-tab:hover{transform:translateY(-3px);border-color:var(--primary)}
+.tool-tab.active{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border-color:transparent;box-shadow:0 8px 22px rgba(99,102,241,.35)}
+.tool-panel{background:var(--card);border-radius:var(--radius);padding:36px;box-shadow:var(--shadow-lg);min-height:280px;display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center}
+.tool-panel-left h3{font-size:1.6rem;color:var(--dark);margin-bottom:14px}
+.tool-panel-left p{color:var(--text-muted);margin-bottom:18px}
+.tool-features{list-style:none;display:flex;flex-direction:column;gap:10px}
+.tool-features li{display:flex;align-items:flex-start;gap:10px;font-size:.95rem}
+.tool-features li::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--success);margin-top:8px;flex-shrink:0}
+.tool-panel-right{display:flex;flex-direction:column;gap:14px}
+.ratio-btn-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:16px}
+.ratio-btn{padding:12px 20px;border-radius:12px;border:2px solid var(--light2);background:#fff;cursor:pointer;font-weight:700;color:var(--text);transition:all .25s;font-size:.92rem}
+.ratio-btn.active{border-color:var(--primary);background:var(--light2);color:var(--primary)}
+.ratio-visual{display:flex;gap:24px;justify-content:center;align-items:flex-end;min-height:180px}
+.ratio-box{border:3px solid var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--primary);background:linear-gradient(135deg,var(--light2),#fff);transition:all .3s;opacity:.35;transform:scale(.9)}
+.ratio-box.active{opacity:1;transform:scale(1);box-shadow:0 8px 22px rgba(99,102,241,.25)}
+.ratio-info{text-align:center;color:var(--text-muted);font-size:.9rem;margin-top:10px}
+
+/* ========== 第五章 安装 ========== */
+.install-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1000px;margin:0 auto}
+.install-step{text-align:center;background:var(--card);padding:34px 24px;border-radius:var(--radius);box-shadow:var(--shadow);position:relative;transition:transform .3s}
+.install-step:hover{transform:translateY(-6px)}
+.install-step .ic-circle{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:2rem;box-shadow:0 8px 22px rgba(99,102,241,.3)}
+.install-step .step-no{position:absolute;top:18px;right:22px;font-size:3rem;font-weight:900;color:var(--light2);line-height:1}
+.install-step h4{font-size:1.25rem;color:var(--dark);margin-bottom:10px}
+.install-step p{font-size:.9rem;color:var(--text-muted)}
+.install-step code{display:inline-block;background:var(--dark);color:#a5b4fc;padding:6px 12px;border-radius:8px;font-size:.82rem;margin-top:10px}
+
+/* ========== 第六章 实战案例流程 ========== */
+.case-flow{max-width:1100px;margin:0 auto}
+.flow-card{display:grid;grid-template-columns:120px 1fr 1fr;gap:24px;background:var(--card);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);margin-bottom:22px;align-items:center;position:relative;transition:transform .3s}
+.flow-card:hover{transform:translateX(6px)}
+.flow-card .fc-step{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.flow-card .fc-step .num{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;font-weight:900;font-size:1.6rem;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(99,102,241,.3)}
+.flow-card .fc-step .fc-type{margin-top:10px;font-size:.82rem;font-weight:700;color:var(--primary);background:var(--light2);padding:3px 12px;border-radius:20px}
+.flow-card .fc-prompt{background:linear-gradient(135deg,var(--light2),#fff);border-radius:12px;padding:16px;border-left:4px solid var(--primary)}
+.flow-card .fc-prompt .plabel{font-size:.78rem;color:var(--text-muted);font-weight:700;margin-bottom:8px;letter-spacing:1px}
+.flow-card .fc-prompt .ptext{font-size:.95rem;color:var(--dark);line-height:1.6}
+.flow-card .fc-result img{width:100%;height:160px;object-fit:cover}
+.flow-card .fc-result video{width:100%;border-radius:12px}
+.fc-final{grid-template-columns:120px 1fr}
+.fc-final .fc-result{grid-column:2}
+.fc-final video{width:100%;max-height:400px;object-fit:contain}
+.fc-arrow{text-align:center;color:var(--primary);font-size:1.8rem;font-weight:800;margin:-8px 0}
+
+/* ========== 提示词优化章节 ========== */
+.prompt-struct{max-width:1000px;margin:0 auto 50px;background:var(--card);border-radius:var(--radius);padding:36px;box-shadow:var(--shadow)}
+.prompt-struct h3{font-size:1.5rem;color:var(--dark);margin-bottom:16px;text-align:center}
+.prompt-formula{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:20px}
+.prompt-tag{padding:10px 18px;border-radius:12px;font-weight:700;font-size:.92rem;color:#fff}
+.prompt-tag:nth-child(1){background:linear-gradient(135deg,#6366f1,#8b5cf6)}
+.prompt-tag:nth-child(2){background:linear-gradient(135deg,#8b5cf6,#a78bfa)}
+.prompt-tag:nth-child(3){background:linear-gradient(135deg,#06b6d4,#22d3ee)}
+.prompt-tag:nth-child(4){background:linear-gradient(135deg,#10b981,#34d399)}
+.prompt-tag:nth-child(5){background:linear-gradient(135deg,#f59e0b,#fbbf24)}
+.prompt-tag:nth-child(6){background:linear-gradient(135deg,#ec4899,#f472b6)}
+.prompt-arrow{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:24px;font-size:1.2rem;color:var(--primary);font-weight:800}
+.prompt-examples{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.prompt-example{background:var(--light2);border-radius:14px;padding:20px;border-left:4px solid var(--primary)}
+.prompt-example:nth-child(2){border-left-color:var(--secondary)}
+.prompt-example:nth-child(3){border-left-color:var(--accent)}
+.prompt-example:nth-child(4){border-left-color:var(--success)}
+.prompt-example .pe-title{font-size:.85rem;font-weight:700;color:var(--primary);margin-bottom:8px}
+.prompt-example .pe-text{font-size:.88rem;color:var(--dark);line-height:1.6}
+.prompt-example .pe-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.prompt-example .pe-tags span{background:#fff;padding:3px 10px;border-radius:12px;font-size:.75rem;color:var(--text-muted);font-weight:600}
+
+/* ========== 第七章 创意启发 ========== */
+.idea-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px;max-width:1100px;margin:0 auto 40px}
+.idea-card{background:var(--card);border-radius:var(--radius);padding:28px 22px;box-shadow:var(--shadow);transition:transform .3s;border-top:4px solid var(--primary);cursor:pointer;position:relative}
+.idea-card:nth-child(2){border-top-color:var(--secondary)}
+.idea-card:nth-child(3){border-top-color:var(--accent)}
+.idea-card:nth-child(4){border-top-color:var(--pink)}
+.idea-card:hover{transform:translateY(-8px)}
+.idea-card .ic{font-size:2.6rem;margin-bottom:14px}
+.idea-card h4{font-size:1.2rem;color:var(--dark);margin-bottom:8px}
+.idea-card .idea-brief{font-size:.9rem;color:var(--text-muted);margin-bottom:10px}
+.idea-card .idea-toggle{font-size:.82rem;color:var(--primary);font-weight:700;display:flex;align-items:center;gap:4px}
+.idea-card .idea-toggle::after{content:'展开详情 ▾';transition:transform .3s}
+.idea-card.expanded .idea-toggle::after{content:'收起详情 '}
+.idea-detail{max-height:0;overflow:hidden;transition:max-height .5s ease,padding .3s ease;padding:0 0 0 0}
+.idea-card.expanded .idea-detail{max-height:600px;padding:16px 0 0 0}
+.idea-detail .id-story{font-size:.88rem;color:var(--dark);margin-bottom:12px;line-height:1.6}
+.idea-detail .id-steps{list-style:none;display:flex;flex-direction:column;gap:8px}
+.idea-detail .id-steps li{display:flex;align-items:flex-start;gap:8px;font-size:.85rem;color:var(--text-muted)}
+.idea-detail .id-steps li .is-num{background:var(--primary);color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;margin-top:2px}
+.contest-banner{max-width:1000px;margin:0 auto;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:var(--radius);padding:34px;color:#fff;text-align:center;box-shadow:var(--shadow-lg)}
+.contest-banner h3{font-size:1.6rem;margin-bottom:10px}
+.contest-banner p{opacity:.95}
+
+/* ========== 页脚 ========== */
+.footer{background:var(--darker);color:rgba(255,255,255,.7);text-align:center;padding:40px 20px}
+.footer .ft-logo{font-size:1.3rem;font-weight:800;color:#fff;margin-bottom:10px}
+.footer p{font-size:.88rem;margin-bottom:6px}
+
+/* ========== 响应式 ========== */
+@media(max-width:900px){
+    .nav-links{display:none}
+    .chapter-nav{display:none}
+    .timeline::before{left:20px}
+    .tl-item,.tl-item:nth-child(even){width:100%;left:0;padding:0 0 40px 50px;transform:translateX(0)}
+    .tl-item:nth-child(odd) .tl-dot,.tl-item:nth-child(even) .tl-dot{left:9px;right:auto}
+    .txt-to-img{grid-template-columns:1fr}
+    .tti-arrow{transform:rotate(90deg)}
+    .flow-steps{grid-template-columns:1fr 1fr}
+    .flow-step::after{display:none}
+    .compare{grid-template-columns:1fr}
+    .platforms{grid-template-columns:1fr}
+    .case-stage{grid-template-columns:1fr}
+    .tool-panel{grid-template-columns:1fr}
+    .install-steps{grid-template-columns:1fr}
+    .prompt-examples{grid-template-columns:1fr}
+    .prompt-formula{flex-direction:column;align-items:center}
+    .flow-card{grid-template-columns:1fr;text-align:center}
+    .flow-card .fc-step{flex-direction:row;justify-content:center;gap:14px}
+    .fc-final{grid-template-columns:1fr}
+    .chapter{padding:80px 18px 60px}
+}
+</style>
+</head>
+<body>
+
+<!-- 进度条 -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- 顶部导航 -->
+<nav class="nav-bar" id="navBar">
+    <div class="nav-container">
+        <div class="nav-logo"><img src="course_assets/logo.png" class="nav-logo-img" alt="Logo">创客宝贝 AI Video</div>
+        <ul class="nav-links">
+            <li><a href="#hero" class="active">首页</a></li>
+            <li><a href="#ch1">背景演化</a></li>
+            <li><a href="#ch2">生成原理</a></li>
+            <li><a href="#ch3">工作流</a></li>
+            <li><a href="#ch4">工具演示</a></li>
+            <li><a href="#ch5">提示词技巧</a></li>
+            <li><a href="#ch6">安装使用</a></li>
+            <li><a href="#ch7">实战案例</a></li>
+            <li><a href="#ch8">创意启发</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- 右侧章节点 -->
+<div class="chapter-nav" id="chapterNav">
+    <div class="chapter-dot active" data-title="首页" data-target="hero"></div>
+    <div class="chapter-dot" data-title="背景演化" data-target="ch1"></div>
+    <div class="chapter-dot" data-title="生成原理" data-target="ch2"></div>
+    <div class="chapter-dot" data-title="工作流方式" data-target="ch3"></div>
+    <div class="chapter-dot" data-title="工具演示" data-target="ch4"></div>
+    <div class="chapter-dot" data-title="提示词技巧" data-target="ch5"></div>
+    <div class="chapter-dot" data-title="安装使用" data-target="ch6"></div>
+    <div class="chapter-dot" data-title="实战案例" data-target="ch7"></div>
+    <div class="chapter-dot" data-title="创意启发" data-target="ch8"></div>
+</div>
+
+<!-- ============ Hero 首页 ============ -->
+<section class="hero" id="hero">
+    <div class="stars"></div>
+    <div class="stars2"></div>
+    <div class="shooting"></div>
+    <div class="shooting s2"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+        <img src="course_assets/logo.png" class="hero-logo" alt="创客宝贝Logo">
+        <span class="hero-badge">AI · VIDEO · CREATIVE</span>
+        <h1>创客宝贝<br>AI Video 课程</h1>
+        <p>从文字到视频，用 AI 实现你的创意梦想</p>
+        <div class="hero-buttons">
+            <a href="#ch1" class="hero-btn primary">开始探索</a>
+            <a href="#ch7" class="hero-btn ghost">查看实战案例</a>
+        </div>
+    </div>
+    <div class="scroll-indicator">
+        <span>向下滚动</span>
+        <span class="arrow"></span>
+    </div>
+</section>
+
+<!-- ============ 第一章 背景演化 ============ -->
+<section class="chapter" id="ch1">
+    <div class="chapter-container">
+        <div class="chapter-header">
+            <span class="chapter-tag">CHAPTER 01</span>
+            <h2 class="chapter-title">AI视频创作的<span class="grad">背景演化</span></h2>
+            <p class="chapter-subtitle">从剪辑软件到全流程 AI，视频创作正在被彻底改变</p>
+        </div>
+
+        <div class="timeline">
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=professional%20video%20editing%20software%20timeline%20interface%20with%20multiple%20tracks%20Premiere%20Pro%20style%20dark%20UI%20screenshots&image_size=landscape_16_9" alt="传统剪辑时代">
+                    <span class="tl-era" style="background:linear-gradient(135deg,#64748b,#475569)">传统时代</span>
+                    <h3>手工剪辑，专业门槛高</h3>
+                    <p>需要逐帧剪辑、调色、加特效，学习成本高，耗时漫长。</p>
+                    <div class="era-tools"><span>Premiere Pro</span><span>Final Cut Pro</span><span>剪映</span><span>DaVinci</span></div>
+                </div>
+            </div>
+
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=beautiful%20AI%20generated%20digital%20painting%20of%20fantasy%20landscape%20vibrant%20colors%20artwork%20gallery&image_size=landscape_16_9" alt="文生图时代">
+                    <span class="tl-era" style="background:linear-gradient(135deg,#8b5cf6,#6366f1)">文生图时代</span>
+                    <h3>一句话，生成一幅画</h3>
+                    <p>AI 学会了"画画"，输入文字就能得到精美图像，创作门槛大幅降低。</p>
+                    <div class="era-tools"><span>Midjourney</span><span>Stable Diffusion</span><span>通义万相</span></div>
+                </div>
+            </div>
+
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=concept%20art%20of%20static%20photograph%20coming%20to%20life%20with%20motion%20arrows%20animation%20flow%20cinematic&image_size=landscape_16_9" alt="图生视频时代">
+                    <span class="tl-era" style="background:linear-gradient(135deg,#06b6d4,#0891b2)">图生视频时代</span>
+                    <h3>让静态图片动起来</h3>
+                    <p>AI 让画面拥有运动与时间，单张图也能变成流动的视频。</p>
+                    <div class="era-tools"><span>Sora</span><span>Runway</span><span>可灵</span><span>通义万相</span></div>
+                </div>
+            </div>
+
+            <div class="tl-item">
+                <div class="tl-dot"></div>
+                <div class="tl-card">
+                    <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=modern%20AI%20workflow%20platform%20dashboard%20interface%20with%20connected%20nodes%20purple%20blue%20theme%20drag%20and%20drop%20canvas&image_size=landscape_16_9" alt="全流程AI时代">
+                    <span class="tl-era" style="background:linear-gradient(135deg,#ec4899,#8b5cf6)">全流程 AI 时代</span>
+                    <h3>工作流，一气呵成</h3>
+                    <p>把生成、编辑、连接串成一条流水线，这正是我们要学的平台。</p>
+                    <div class="era-tools"><span>我们的工作流平台</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 第二章 生成原理 ============ -->
+<section class="chapter" id="ch2">
+    <div class="chapter-container">
+        <div class="chapter-header">
+            <span class="chapter-tag">CHAPTER 02</span>
+            <h2 class="chapter-title">AI 是如何<span class="grad">生成图像和视频的</span>？</h2>
+        </div>
+
+        <!-- 文字变图像可视化 -->
+        <div class="txt-to-img">
+            <div class="tti-text">
+                <div class="quote">输入一句话</div>
+                <div class="sentence">"月光下森林里漫步的小猫"</div>
+            </div>
+            <div class="tti-arrow">→</div>
+            <div class="tti-result">
+                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=a%20cute%20kitten%20walking%20in%20a%20forest%20under%20moonlight%20silver%20rays%20dreamy%20atmosphere%20anime%20style&image_size=landscape_4_3" alt="月光下森林里漫步的小猫">
+            </div>
+        </div>
+
+        <!-- 完整流程概览 -->
+        <div class="pipeline-overview">
+            <div class="pipeline-stage">
+                <div class="ps-icon"></div>
+                <div class="ps-title">文本编码器</div>
+                <div class="ps-desc">文字 → 条件向量</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-stage">
+                <div class="ps-icon">🎲</div>
+                <div class="ps-title">扩散模型</div>
+                <div class="ps-desc">噪声 → 潜空间表示</div>
+                <div class="ps-note">（在潜空间中工作）</div>
+            </div>
+            <div class="pipeline-arrow">→</div>
+            <div class="pipeline-stage">
+                <div class="ps-icon">🖼️</div>
+                <div class="ps-title">解码器</div>
+                <div class="ps-desc">潜空间 → 像素图像</div>
+            </div>
+        </div>
+
+        <div class="flow-steps">
+            <div class="flow-step"><div class="num">1</div><h4>文本编码</h4><p>AI 读懂文字，提取条件向量（主体、场景、风格等）</p></div>
+            <div class="flow-step"><div class="num">2</div><h4>潜空间去噪</h4><p>扩散模型在潜空间中，从噪声逐步生成"压缩表示"</p></div>
+            <div class="flow-step"><div class="num">3</div><h4>解码还原</h4><p>解码器把潜空间数据放大还原成真正的像素图像</p></div>
+        </div>
+
+        <!-- 第一步：文本编码器 -->
+        <div class="diffusion-section" style="margin-top:60px">
+            <h3>第一步：文本编码器</h3>
+            <p class="ds-sub">AI 的"翻译官"—— 把人类语言拆解成 AI 能理解的"镜头脚本"</p>
+            <div class="text-encoder-demo">
+                <div class="ted-input-row">
+                    <input type="text" id="tedInput" class="ted-input" placeholder="试试输入：一只柯基在雪地里奔跑，阳光透过松树林" value="一个短发女孩在金色麦田中奔跑，肩头停着鹦鹉，日落暖光，动漫风格">
+                    <button class="diff-btn go" id="tedAnalyze">分析</button>
+                </div>
+                <div class="ted-result" id="tedResult">
+                    <div class="ted-empty">点击"分析"，看 AI 如何理解这句话 ↓</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第二步：扩散模型 -->
+        <div class="diffusion-section" style="margin-top:60px">
+            <h3>第二步：扩散模型（在潜空间中工作）</h3>
+            <p class="ds-sub">AI 在"潜空间"里从噪声中逐步去噪，生成画面的"压缩表示"—— 注意，这还不是我们看到的图！</p>
+            <div class="diff-wrap">
+                <div class="diff-canvas-row">
+                    <div class="diff-canvas-box">
+                        <div class="label">潜空间：噪声 → 压缩表示</div>
+                        <canvas id="diffusionCanvas" width="360" height="360"></canvas>
+                    </div>
+                </div>
+                <div class="diff-controls">
+                    <div class="diff-slider-row">
+                        <label>去噪步骤</label>
+                        <input type="range" id="diffSlider" min="0" max="40" value="0">
+                        <div class="diff-step-display" id="diffDisplay">第 0 步</div>
+                    </div>
+                    <div class="diff-buttons">
+                        <button class="diff-btn go" id="diffPlay">开始演示</button>
+                        <button class="diff-btn reset" id="diffReset">重置噪声</button>
+                    </div>
+                    <div class="diff-hint">提示：把滑块拖到最右，或点击"开始演示"自动播放</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 第三步：解码器 -->
+        <div class="diffusion-section" style="margin-top:60px">
+            <h3>第三步：解码器（潜空间 → 像素图像）</h3>
+            <p class="ds-sub">扩散模型生成的只是"压缩表示"，解码器负责把它"放大还原"成我们真正看到的画面 —— 拖动滑块试试！</p>
+            <div class="decoder-simple">
+                <div class="decoder-canvas-wrap">
+                    <canvas id="decoderCanvas" width="400" height="300"></canvas>
+                    <div class="decoder-label" id="decoderLabel">潜空间 · 超小马赛克</div>
+                </div>
+                <div class="decoder-controls">
+                    <div class="diff-slider-row">
+                        <label>放大倍数</label>
+                        <input type="range" id="decoderSlider" min="1" max="100" value="1">
+                        <div class="diff-step-display" id="decoderDisplay">1%</div>
+                    </div>
+                    <div class="diff-buttons">
+                        <button class="diff-btn go" id="decoderPlay">自动播放</button>
+                        <button class="diff-btn reset" id="decoderReset">重置</button>
+                    </div>
+                    <div class="diff-hint">提示：拖动滑块，看画面从马赛克变成高清</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 第三章 工作流方式 ============ -->
+<section class="chapter" id="ch3">
+    <div class="chapter-container">
+        <div class="chapter-header">
+            <span class="chapter-tag">CHAPTER 03</span>
+            <h2 class="chapter-title">为什么使用<span class="grad">工作流方式</span></h2>
+            <p class="chapter-subtitle">最自然的方式 —— 让脑中的流程，一眼可见</p>
+        </div>
+
+        <!-- 对比展示 -->
+        <div class="compare">
+            <div class="compare-col bad">
+                <h3>网页对话：思路被打断</h3>
+                <div class="chat-bubble"><div class="role">我</div>帮我生成一张小女孩奔跑的图</div>
+                <div class="chat-bubble interrupted"><div class="role">AI</div>好的，正在生成…</div>
+                <div class="chat-bubble"><div class="role">我</div>等等，我改下要求</div>
+                <div class="chat-bubble interrupted"><div class="role">我</div>还是换成飞鸟战士吧</div>
+                <p style="font-size:.88rem;color:var(--text-muted);margin-top:10px">来回对话、思路混乱、难以追溯每一步</p>
+            </div>
+            <div class="compare-col good">
+                <h3>工作流：一目了然</h3>
+                <div class="flow-mini">
+                    <div class="flow-mini-node">文生图 · 小女孩奔跑</div>
+                    <div class="flow-mini-node">图生图 · 镜头拉近</div>
+                    <div class="flow-mini-node">图生图 · 飞鸟战士</div>
+                    <div class="flow-mini-node">图生视频 · 一镜到底</div>
+                </div>
+                <p style="font-size:.88rem;color:var(--text-muted);margin-top:14px">流程清晰、可对照思路、随时调整任意节点</p>
+            </div>
+        </div>
+
+        <!-- 各家平台 -->
+        <div class="platforms">
+            <div class="platform-card">
+                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Coze%20AI%20workflow%20platform%20interface%20with%20chatbot%20builder%20nodes%20connected%20blue%20theme&image_size=landscape_16_9" alt="Coze">
+                <div class="pc-body"><h4>Coze（扣子）</h4><div class="pc-tag">字节跳动</div><p>AI 工作流与智能体平台，绑定自家模型接口</p></div>
+            </div>
+            <div class="platform-card">
+                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=MiniMax%20MaxHub%20AI%20creative%20platform%20interface%20dark%20theme%20content%20generation%20dashboard&image_size=landscape_16_9" alt="MaxHub">
+                <div class="pc-body"><h4>MaxHub</h4><div class="pc-tag">MiniMax</div><p>AI 创作平台，模型接口封闭，费用昂贵</p></div>
+            </div>
+            <div class="platform-card ours">
+                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=AI%20video%20creation%20workflow%20editor%20interface%20with%20canvas%20nodes%20connected%20drag%20and%20drop%20purple%20theme&image_size=landscape_16_9" alt="我们的平台">
+                <div class="pc-body"><h4>创客宝贝工作流</h4><div class="pc-tag">本课程平台</div><p>可视化节点、自由组合、专为视频创作设计</p></div>
+            </div>
+        </div>
+
+        <!-- 女孩和鹦鹉案例动画演示 -->
+        <div class="case-demo">
+            <h3>女孩与鹦鹉战士 · 一镜到底</h3>
+            <p class="cd-sub">点击"下一步"，看四张关键帧如何串成一个故事</p>
+            <div class="case-stage">
+                <div class="case-display" id="caseDisplay">
+                    <div class="scene-badge" id="sceneBadge">场景 1 / 4</div>
+                    <img src="course_assets/scene1.png" class="active" data-idx="0" alt="场景1">
+                    <img src="course_assets/scene2.png" data-idx="1" alt="场景2">
+                    <img src="course_assets/scene3.png" data-idx="2" alt="场景3">
+                    <img src="course_assets/scene4.png" data-idx="3" alt="场景4">
+                </div>
+                <div class="case-story" id="caseStory">
+                    <div class="case-story-text active"><span class="step-num">01</span>小女孩在旷野中奔跑，背景有脚步声音。</div>
+                </div>
+            </div>
+            <div class="case-thumbs" id="caseThumbs">
+                <div class="case-thumb active" data-idx="0"><img src="course_assets/scene1.png"><span class="tnum">1</span></div>
+                <div class="case-thumb" data-idx="1"><img src="course_assets/scene2.png"><span class="tnum">2</span></div>
+                <div class="case-thumb" data-idx="2"><img src="course_assets/scene3.png"><span class="tnum">3</span></div>
+                <div class="case-thumb" data-idx="3"><img src="course_assets/scene4.png"><span class="tnum">4</span></div>
+            </div>
+            <div class="case-controls">
+                <button class="case-btn prev" id="casePrev" disabled>上一步</button>
+                <span class="case-counter" id="caseCounter">1 / 4</span>
+                <button class="case-btn next" id="caseNext">下一步</button>
+            </div>
+            <div class="case-video-wrap" id="caseVideoWrap">
+                <div class="vv-label">最终生成的视频 · 一镜到底</div>
+                <video src="course_assets/case_video.mp4" controls playsinline></video>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 第四章 工具功能演示 ============ -->
+<section class="chapter" id="ch4">
+    <div class="chapter-container">
+        <div class="chapter-header">
+            <span class="chapter-tag">CHAPTER 04</span>
+            <h2 class="chapter-title">工具功能<span class="grad">演示</span></h2>
+            <p class="chapter-subtitle">点击下方工具按钮，查看每个功能的详解与图例</p>
+        </div>
+
+        <div class="tool-tabs" id="toolTabs">
+            <div class="tool-tab active" data-tool="asset"><span class="ic">📤</span>添加资产</div>
+            <div class="tool-tab" data-tool="txt2img"><span class="ic">🖼️</span>文生图</div>
+            <div class="tool-tab" data-tool="txt2video"><span class="ic">🎬</span>文生视频</div>
+            <div class="tool-tab" data-tool="edit"><span class="ic">✂️</span>视频编辑</div>
+        </div>
+
+        <div class="tool-panel" id="toolPanel">
+            <div class="tool-panel-left" id="toolLeft">
+                <h3>添加资产</h3>
+                <p>把你准备好的图片、视频、音频素材上传到工作区，作为创作的"原材料"。</p>
+                <ul class="tool-features">
+                    <li>支持拖拽上传图片与视频</li>
+                    <li>素材可在多个节点间复用</li>
+                    <li>统一管理，随时调用</li>
+                </ul>
+            </div>
+            <div class="tool-panel-right" id="toolRight">
+                <div class="ratio-btn-row" id="ratioRow">
+                    <div class="ratio-btn active" data-ratio="916">9:16 竖屏</div>
+                    <div class="ratio-btn" data-ratio="169">16:9 横屏</div>
+                    <div class="ratio-btn" data-ratio="5s">5s 时长</div>
+                </div>
+                <div class="ratio-visual" id="ratioVisual">
+                    <div class="ratio-box active" data-ratio="916" style="width:90px;height:160px">9:16</div>
+                    <div class="ratio-box" data-ratio="169" style="width:160px;height:90px">16:9</div>
+                </div>
+                <div class="ratio-info" id="ratioInfo">9:16 竖屏 · 适合手机短视频、抖音/快手</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 第五章 提示词技巧 ============ -->
+<section class="chapter" id="ch5">
+    <div class="chapter-container">
+        <div class="chapter-header">
+            <span class="chapter-tag">CHAPTER 05</span>
+            <h2 class="chapter-title">提示词<span class="grad">优化技巧</span></h2>
+            <p class="chapter-subtitle">写好提示词，是 AI 创作的第一步</p>
+        </div>
+
+        <!-- Agnes 提示词结构 -->
+        <div class="prompt-struct">
+            <h3>Agnes 提示词公式</h3>
+            <div class="prompt-formula">
+                <span class="prompt-tag">主体</span>
+                <span class="prompt-tag">动作</span>
+                <span class="prompt-tag">场景</span>
+                <span class="prompt-tag">镜头</span>
+                <span class="prompt-tag">光线</span>
+                <span class="prompt-tag">风格</span>
+            </div>
+            <div class="prompt-arrow">按顺序组合，效果最佳</div>
+
+            <div class="prompt-examples">
+                <div class="prompt-example">
+                    <div class="pe-title">文生图示例 · 奇幻</div>
+                    <div class="pe-text">一个短发黑衣女孩在金色麦田中奔跑，肩头停着一只彩色鹦鹉，电影级广角镜头，日落金色暖光，动漫风格，高细节</div>
+                    <div class="pe-tags">
+                        <span>主体: 女孩+鹦鹉</span>
+                        <span>动作: 奔跑</span>
+                        <span>场景: 麦田日落</span>
+                        <span>镜头: 广角</span>
+                        <span>光线: 金色暖光</span>
+                        <span>风格: 动漫</span>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <div class="pe-title">文生图示例 · 科幻</div>
+                    <div class="pe-text">一艘未来飞船穿越五彩斑斓的星云，前景有小行星带，戏剧性仰角镜头，霓虹蓝紫色光线，科幻动漫风格，4K画质</div>
+                    <div class="pe-tags">
+                        <span>主体: 飞船</span>
+                        <span>动作: 穿越</span>
+                        <span>场景: 星云+小行星</span>
+                        <span>镜头: 仰角</span>
+                        <span>光线: 霓虹蓝紫</span>
+                        <span>风格: 科幻动漫</span>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <div class="pe-title">文生图示例 · 自然</div>
+                    <div class="pe-text">一只柯基犬在雪地里欢快奔跑，雪花飞舞，阳光透过松树林洒下斑驳光影，中景跟拍，温暖自然光，写实摄影风格</div>
+                    <div class="pe-tags">
+                        <span>主体: 柯基犬</span>
+                        <span>动作: 奔跑</span>
+                        <span>场景: 雪地松林</span>
+                        <span>镜头: 中景跟拍</span>
+                        <span>光线: 自然阳光</span>
+                        <span>风格: 写实摄影</span>
+                    </div>
+                </div>
+                <div class="prompt-example">
+                    <div class="pe-title">图生视频提示词技巧</div>
+                    <div class="pe-text">描述哪些内容应该运动，哪些应该保持稳定。例如："头发随风飘动，面部表情保持自然，背景云朵缓慢移动，镜头缓慢推进"</div>
+                    <div class="pe-tags">
+                        <span>运动描述</span>
+                        <span>稳定元素</span>
+                        <span>镜头运动</span>
+                        <span>一镜到底</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 第六章 安装与使用 ============ -->
+<section class="chapter" id="ch6">
+    <div class="chapter-container">
+        <div class="chapter-header">
+            <span class="chapter-tag">CHAPTER 06</span>
+            <h2 class="chapter-title">安装与<span class="grad">使用</span></h2>
+            <p class="chapter-subtitle">三步开始你的 AI 视频创作之旅</p>
+        </div>
+
+        <div class="install-steps">
+            <div class="install-step">
+                <span class="step-no">01</span>
+                <div class="ic-circle">📁</div>
+                <h4>拷贝文件夹</h4>
+                <p>将老师发给你的 MakerBaby-AI-Video 文件夹拷贝到电脑上，建议放在桌面上。</p>
+                <code>MakerBaby-AI-Video</code>
+            </div>
+            <div class="install-step">
+                <span class="step-no">02</span>
+                <div class="ic-circle">⬇</div>
+                <h4>安装依赖</h4>
+                <p>打开终端，进入文件夹，运行命令安装所需的 Python 库。</p>
+                <code>pip install -r requirements.txt</code>
+            </div>
+            <div class="install-step">
+                <span class="step-no">03</span>
+                <div class="ic-circle">▶</div>
+                <h4>启动服务</h4>
+                <p>在终端中运行启动命令，然后在浏览器中访问 http://localhost:5000</p>
+                <code>python app.py</code>
+            </div>
+            <div class="install-step">
+                <span class="step-no">04</span>
+                <div class="ic-circle">🔑</div>
+                <h4>配置密钥</h4>
+                <p>首次进入需要填入你的 API Key，配置后会自动保存。</p>
+                <code>Agnes / Qwen API Key</code>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 第七章 实战案例 ============ -->
+<section class="chapter" id="ch7">
+    <div class="chapter-container">
+        <div class="chapter-header">
+            <span class="chapter-tag">CHAPTER 07</span>
+            <h2 class="chapter-title">实战案例 ·<span class="grad">女孩与鹦鹉战士</span></h2>
+            <p class="chapter-subtitle">从一句话到一段视频，完整还原创作流程</p>
+        </div>
+
+        <div class="case-flow">
+            <div class="flow-card">
+                <div class="fc-step"><div class="num">1</div><div class="fc-type">文生图</div></div>
+                <div class="fc-prompt">
+                    <div class="plabel">提示词 PROMPT</div>
+                    <div class="ptext">参考圣斗士星矢动画风格，一位小女孩，肩膀上站着一只鹦鹉，在旷野中向前方奔跑，镜头背对着小女孩。</div>
+                </div>
+                <div class="fc-result"><img src="course_assets/scene1.png" alt="场景1"></div>
+            </div>
+            <div class="fc-arrow">↓</div>
+
+            <div class="flow-card">
+                <div class="fc-step"><div class="num">2</div><div class="fc-type">图生图</div></div>
+                <div class="fc-prompt">
+                    <div class="plabel">提示词 PROMPT</div>
+                    <div class="ptext">在这张图的基础上，镜头拉近到面部特写，狂奔中的小女孩说"飞吧"，鹦鹉开始离开肩膀准备展翅飞向天空。</div>
+                </div>
+                <div class="fc-result"><img src="course_assets/scene2.png" alt="场景2"></div>
+            </div>
+            <div class="fc-arrow">↓</div>
+
+            <div class="flow-card">
+                <div class="fc-step"><div class="num">3</div><div class="fc-type">图生图</div></div>
+                <div class="fc-prompt">
+                    <div class="plabel">提示词 PROMPT</div>
+                    <div class="ptext">鹦鹉飞向蔚蓝的深空，变身成了一只飞鸟战士，头带金盔，小女孩已经在遥远的角落。</div>
+                </div>
+                <div class="fc-result"><img src="course_assets/scene3.png" alt="场景3"></div>
+            </div>
+            <div class="fc-arrow">↓</div>
+
+            <div class="flow-card">
+                <div class="fc-step"><div class="num">4</div><div class="fc-type">图生图</div></div>
+                <div class="fc-prompt">
+                    <div class="plabel">提示词 PROMPT</div>
+                    <div class="ptext">飞鸟战士在深空中放出绚烂的烟花，消失变成了一颗闪亮的星星。</div>
+                </div>
+                <div class="fc-result"><img src="course_assets/scene4.png" alt="场景4"></div>
+            </div>
+            <div class="fc-arrow">↓</div>
+
+            <div class="flow-card fc-final">
+                <div class="fc-step"><div class="num">5</div><div class="fc-type">图生视频</div></div>
+                <div class="fc-result">
+                    <div style="text-align:center;color:var(--text-muted);margin-bottom:12px;font-weight:700">四张关键帧按顺序连接，一镜到底生成视频</div>
+                    <video src="course_assets/case_video.mp4" controls playsinline></video>
+                </div>
+            </div>
+        </div>
+
+        <!-- 案例二分隔 -->
+        <div style="max-width:1100px;margin:60px auto 0;text-align:center">
+            <div style="display:inline-block;padding:12px 30px;border-radius:30px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;font-weight:800;font-size:1.1rem;letter-spacing:2px">案例二</div>
+        </div>
+
+        <div class="case-flow" style="margin-top:40px">
+            <div class="flow-card">
+                <div class="fc-step"><div class="num">1</div><div class="fc-type">文生图</div></div>
+                <div class="fc-prompt">
+                    <div class="plabel">故事概述</div>
+                    <div class="ptext">一位少年从小在创客宝贝学习，用3D建模软件设计了一款近防炮模型的最新作品。他期望以后真的能为祖国设计这样的现代化武器。</div>
+                </div>
+                <div class="fc-result"><img src="course_assets/case2_scene1.png" alt="创客教室"></div>
+            </div>
+            <div class="fc-arrow">↓</div>
+
+            <div class="flow-card">
+                <div class="fc-step"><div class="num">2</div><div class="fc-type">图生图</div></div>
+                <div class="fc-prompt">
+                    <div class="plabel">提示词 PROMPT</div>
+                    <div class="ptext">一位穿蓝色T恤的少年，正在创客教室的工作台上认真组装一台灰色的近防炮模型，桌上散落着各种工具和零件，背景有3D打印机和工具架，温暖的车间灯光，写实摄影风格</div>
+                </div>
+                <div class="fc-result"><img src="course_assets/case2_scene2.png" alt="组装模型"></div>
+            </div>
+            <div class="fc-arrow">↓</div>
+
+            <div class="flow-card">
+                <div class="fc-step"><div class="num">3</div><div class="fc-type">图生图</div></div>
+                <div class="fc-prompt">
+                    <div class="plabel">提示词 PROMPT</div>
+                    <div class="ptext">未来战舰的甲板上，安装着一台先进的近防炮系统，炮身上闪烁着蓝色的能量光线，远处海面上还有另一艘战舰，电影级广角镜头，科幻军事风格，戏剧性光影</div>
+                </div>
+                <div class="fc-result"><img src="course_assets/case2_scene3.png" alt="未来战舰"></div>
+            </div>
+            <div class="fc-arrow">↓</div>
+
+            <div class="flow-card fc-final">
+                <div class="fc-step"><div class="num">4</div><div class="fc-type">图生视频</div></div>
+                <div class="fc-result">
+                    <div style="text-align:center;color:var(--text-muted);margin-bottom:12px;font-weight:700">从创客教室到未来战舰 · 梦想成真的故事</div>
+                    <video src="course_assets/case2_video.mp4" controls playsinline></video>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============ 第八章 创意启发 ============ -->
+<section class="chapter" id="ch8">
+    <div class="chapter-container">
+        <div class="chapter-header">
+            <span class="chapter-tag">CHAPTER 08</span>
+            <h2 class="chapter-title">创意<span class="grad">启发</span></h2>
+            <p class="chapter-subtitle">让 AI 成为你的画笔，去讲述属于你的故事</p>
+        </div>
+
+        <div class="idea-grid">
+            <div class="idea-card">
+                <div class="ic">🌟</div>
+                <h4>奇幻冒险</h4>
+                <p class="idea-brief">少年与神兽的冒险旅程，一镜到底</p>
+                <div class="idea-toggle"></div>
+                <div class="idea-detail">
+                    <div class="id-story"><strong>故事线：</strong>一位少年在森林中意外发现一只受伤的神兽，他用心照顾神兽康复，最终神兽带他飞越云海，看到了从未见过的奇幻世界。</div>
+                    <ul class="id-steps">
+                        <li><span class="is-num">1</span>文生图：生成少年在森林中发现发光神兽的画面</li>
+                        <li><span class="is-num">2</span>图生图：少年为神兽包扎伤口，温馨互动场景</li>
+                        <li><span class="is-num">3</span>图生图：神兽康复，带着少年飞上云端</li>
+                        <li><span class="is-num">4</span>图生图：云海之上的奇幻世界全景</li>
+                        <li><span class="is-num">5</span>图生视频：四张关键帧连接，一镜到底</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="idea-card">
+                <div class="ic">🚀</div>
+                <h4>科幻未来</h4>
+                <p class="idea-brief">飞船穿越星云，探索未知星球</p>
+                <div class="idea-toggle"></div>
+                <div class="idea-detail">
+                    <div class="id-story"><strong>故事线：</strong>一艘小型探索飞船从地球出发，穿越绚丽的星云带，遭遇小行星风暴后紧急避险，最终降落在一颗散发着紫色光芒的未知星球上。</div>
+                    <ul class="id-steps">
+                        <li><span class="is-num">1</span>文生图：飞船从地球发射升空的壮观场面</li>
+                        <li><span class="is-num">2</span>图生图：飞船穿越五彩斑斓的星云带</li>
+                        <li><span class="is-num">3</span>图生图：小行星风暴中飞船紧急转向</li>
+                        <li><span class="is-num">4</span>图生图：降落紫色星球，外星植物发光</li>
+                        <li><span class="is-num">5</span>图生视频：全程一镜到底，镜头持续推进</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="idea-card">
+                <div class="ic">🌿</div>
+                <h4>自然童话</h4>
+                <p class="idea-brief">森林里的小动物，治愈系故事</p>
+                <div class="idea-toggle"></div>
+                <div class="idea-detail">
+                    <div class="id-story"><strong>故事线：</strong>春天来了，一只小松鼠从树洞里醒来，它跳出树洞，在阳光洒落的森林中收集坚果，遇到好朋友小兔子，一起在花丛中玩耍，最后夕阳西下，两个小伙伴依偎在一起。</div>
+                    <ul class="id-steps">
+                        <li><span class="is-num">1</span>文生图：清晨阳光透过树叶，小松鼠从树洞探出头</li>
+                        <li><span class="is-num">2</span>图生图：小松鼠在草地上收集坚果，周围有蝴蝶飞舞</li>
+                        <li><span class="is-num">3</span>图生图：遇到小兔子，两个小伙伴在花丛中嬉戏</li>
+                        <li><span class="is-num">4</span>图生图：夕阳下两个小伙伴依偎在树根旁</li>
+                        <li><span class="is-num">5</span>图生视频：温暖治愈的一镜到底</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="idea-card">
+                <div class="ic">🎨</div>
+                <h4>艺术再现</h4>
+                <p class="idea-brief">让名画动起来，赋予经典新生</p>
+                <div class="idea-toggle"></div>
+                <div class="idea-detail">
+                    <div class="id-story"><strong>故事线：</strong>选取一幅经典名画（如梵高的星月夜），先用文生图还原画作风格，然后通过图生图让画中的元素动起来——星星旋转、柏树摇曳、村庄炊烟袅袅升起，最后镜头拉远展现整幅画"活"过来的震撼效果。</div>
+                    <ul class="id-steps">
+                        <li><span class="is-num">1</span>文生图：用AI还原梵高星月夜的油画风格</li>
+                        <li><span class="is-num">2</span>图生图：画中的星星开始旋转发光</li>
+                        <li><span class="is-num">3</span>图生图：柏树随风摇曳，村庄升起炊烟</li>
+                        <li><span class="is-num">4</span>图生图：镜头拉远，整幅画在博物馆中"活"过来</li>
+                        <li><span class="is-num">5</span>图生视频：名画复活的一镜到底</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="contest-banner">
+            <h3>创客宝贝 AI 视频大赛</h3>
+            <p>用工作流创作属于你的短片，优秀作品将获得展示与奖励！<br>完成作品后直接提交给老师即可参赛。</p>
+        </div>
+    </div>
+</section>
+
+<!-- 页脚 -->
+<footer class="footer">
+    <div class="ft-logo">创客宝贝 AI Video</div>
+    <p>从文字到视频，用 AI 实现你的创意梦想</p>
+    <p style="opacity:.5;margin-top:8px">© 2026 创客宝贝课程</p>
+</footer>
+
+<script>
+/* ========== 滚动进度条与导航高亮 ========== */
+const progressBar = document.getElementById('progressBar');
+const navBar = document.getElementById('navBar');
+const navLinks = document.querySelectorAll('.nav-links a');
+const chapterDots = document.querySelectorAll('.chapter-dot');
+const sections = ['hero','ch1','ch2','ch3','ch4','ch5','ch6','ch7','ch8'];
+
+window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const docH = document.documentElement.scrollHeight - window.innerHeight;
+    progressBar.style.width = (docH > 0 ? (scrollY / docH) * 100 : 0) + '%';
+    navBar.classList.toggle('scrolled', scrollY > 50);
+
+    // 计算当前所在章节
+    let currentIdx = 0;
+    sections.forEach((id, i) => {
+        const el = document.getElementById(id);
+        if (el && scrollY >= el.offsetTop - 140) currentIdx = i;
+    });
+    navLinks.forEach((l, i) => l.classList.toggle('active', i === currentIdx));
+    chapterDots.forEach((d, i) => d.classList.toggle('active', i === currentIdx));
+});
+
+/* ========== 右侧章节点点击跳转 ========== */
+chapterDots.forEach(dot => {
+    dot.addEventListener('click', () => {
+        const target = document.getElementById(dot.dataset.target);
+        if (target) target.scrollIntoView({behavior:'smooth'});
+    });
+});
+
+/* ========== IntersectionObserver 章节入场动画 ========== */
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            // 时间线项目依次出现
+            if (entry.target.querySelector('.timeline')) {
+                const items = entry.target.querySelectorAll('.tl-item');
+                items.forEach((it, i) => {
+                    setTimeout(() => it.classList.add('show'), i * 220);
+                });
+            }
+        }
+    });
+}, {threshold: 0.12});
+
+document.querySelectorAll('.chapter-container').forEach(c => observer.observe(c));
+
+/* ========== 扩散模型交互演示 ========== */
+(function(){
+    const canvas = document.getElementById('diffusionCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const slider = document.getElementById('diffSlider');
+    const display = document.getElementById('diffDisplay');
+    const playBtn = document.getElementById('diffPlay');
+    const resetBtn = document.getElementById('diffReset');
+
+    // 离屏目标图像：月光下的小猫剪影
+    const target = document.createElement('canvas');
+    target.width = W; target.height = H;
+    const tctx = target.getContext('2d');
+
+    // 固定噪声数据（重置时重新生成）
+    let noiseData = null;
+
+    function drawTarget(){
+        // 夜空渐变
+        const sky = tctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, '#0f172a');
+        sky.addColorStop(0.55, '#312e81');
+        sky.addColorStop(1, '#1e3a8a');
+        tctx.fillStyle = sky;
+        tctx.fillRect(0, 0, W, H);
+
+        // 星星
+        tctx.fillStyle = '#fff';
+        for (let i = 0; i < 40; i++){
+            const x = Math.random() * W, y = Math.random() * H * 0.6;
+            const r = Math.random() * 1.6 + 0.4;
+            tctx.globalAlpha = Math.random() * 0.7 + 0.3;
+            tctx.beginPath(); tctx.arc(x, y, r, 0, Math.PI * 2); tctx.fill();
+        }
+        tctx.globalAlpha = 1;
+
+        // 月亮
+        const mx = W * 0.74, my = H * 0.26;
+        const moonGrad = tctx.createRadialGradient(mx, my, 10, mx, my, 70);
+        moonGrad.addColorStop(0, '#fef9c3');
+        moonGrad.addColorStop(0.5, '#fde047');
+        moonGrad.addColorStop(1, 'rgba(253,224,71,0)');
+        tctx.fillStyle = moonGrad;
+        tctx.beginPath(); tctx.arc(mx, my, 70, 0, Math.PI * 2); tctx.fill();
+        tctx.fillStyle = '#fef9c3';
+        tctx.beginPath(); tctx.arc(mx, my, 32, 0, Math.PI * 2); tctx.fill();
+
+        // 远山
+        tctx.fillStyle = '#1e293b';
+        tctx.beginPath();
+        tctx.moveTo(0, H * 0.72);
+        tctx.lineTo(W * 0.2, H * 0.6);
+        tctx.lineTo(W * 0.4, H * 0.68);
+        tctx.lineTo(W * 0.6, H * 0.58);
+        tctx.lineTo(W * 0.8, H * 0.66);
+        tctx.lineTo(W, H * 0.6);
+        tctx.lineTo(W, H); tctx.lineTo(0, H);
+        tctx.closePath(); tctx.fill();
+
+        // 地面
+        const ground = tctx.createLinearGradient(0, H * 0.7, 0, H);
+        ground.addColorStop(0, '#0f172a');
+        ground.addColorStop(1, '#020617');
+        tctx.fillStyle = ground;
+        tctx.fillRect(0, H * 0.78, W, H * 0.22);
+
+        // 小猫剪影（坐姿）
+        tctx.fillStyle = '#000';
+        const cx = W * 0.32, cy = H * 0.82;
+        // 身体
+        tctx.beginPath();
+        tctx.ellipse(cx, cy, 48, 36, 0, 0, Math.PI * 2);
+        tctx.fill();
+        // 头
+        tctx.beginPath();
+        tctx.arc(cx + 30, cy - 30, 26, 0, Math.PI * 2);
+        tctx.fill();
+        // 耳朵
+        tctx.beginPath();
+        tctx.moveTo(cx + 12, cy - 48);
+        tctx.lineTo(cx + 22, cy - 64);
+        tctx.lineTo(cx + 30, cy - 50);
+        tctx.closePath(); tctx.fill();
+        tctx.beginPath();
+        tctx.moveTo(cx + 36, cy - 50);
+        tctx.lineTo(cx + 46, cy - 64);
+        tctx.lineTo(cx + 48, cy - 46);
+        tctx.closePath(); tctx.fill();
+        // 尾巴
+        tctx.beginPath();
+        tctx.moveTo(cx - 40, cy - 10);
+        tctx.quadraticCurveTo(cx - 70, cy - 50, cx - 50, cy - 70);
+        tctx.lineWidth = 12; tctx.strokeStyle = '#000';
+        tctx.lineCap = 'round'; tctx.stroke();
+        tctx.lineWidth = 1;
+        // 眼睛（月光反光）
+        tctx.fillStyle = '#fde047';
+        tctx.beginPath(); tctx.arc(cx + 38, cy - 32, 3, 0, Math.PI * 2); tctx.fill();
+        tctx.beginPath(); tctx.arc(cx + 24, cy - 32, 3, 0, Math.PI * 2); tctx.fill();
+    }
+
+    function genNoise(){
+        const img = tctx.createImageData(W, H);
+        for (let i = 0; i < img.data.length; i += 4){
+            const v = Math.random() * 255;
+            img.data[i] = v;
+            img.data[i+1] = v;
+            img.data[i+2] = v;
+            img.data[i+3] = 255;
+        }
+        noiseData = img;
+    }
+
+    // 渲染某一去噪步骤：t=0 纯噪声，t=1 完全清晰
+    function renderStep(step){
+        const maxStep = parseInt(slider.max);
+        const t = Math.min(1, step / maxStep);
+        const targetImg = tctx.getImageData(0, 0, W, H);
+        const out = ctx.createImageData(W, H);
+        const noise = noiseData.data;
+        const tgt = targetImg.data;
+        // 噪声强度随步骤衰减（模拟扩散去噪）
+        const noiseLevel = Math.pow(1 - t, 1.5);
+        for (let i = 0; i < out.data.length; i += 4){
+            // 每步加入少量新噪声，使"去噪"过程更真实
+            const flicker = (1 - t) > 0.05 ? (Math.random() - 0.5) * 60 * (1 - t) : 0;
+            let r = tgt[i] * t + noise[i] * noiseLevel + flicker;
+            let g = tgt[i+1] * t + noise[i+1] * noiseLevel + flicker;
+            let b = tgt[i+2] * t + noise[i+2] * noiseLevel + flicker;
+            out.data[i] = Math.max(0, Math.min(255, r));
+            out.data[i+1] = Math.max(0, Math.min(255, g));
+            out.data[i+2] = Math.max(0, Math.min(255, b));
+            out.data[i+3] = 255;
+        }
+        ctx.putImageData(out, 0, 0);
+        display.textContent = '第 ' + step + ' 步';
+        // 步骤标签语义化
+        const pct = t;
+        let tag = '';
+        if (pct === 0) tag = ' · 纯噪声';
+        else if (pct < 0.3) tag = ' · 隐约可见';
+        else if (pct < 0.6) tag = ' · 轮廓浮现';
+        else if (pct < 0.9) tag = ' · 逐渐清晰';
+        else tag = ' · 完成';
+        display.textContent = '第 ' + step + ' 步' + tag;
+    }
+
+    drawTarget();
+    genNoise();
+    renderStep(0);
+
+    slider.addEventListener('input', () => renderStep(parseInt(slider.value)));
+
+    let playing = false;
+    let playTimer = null;
+    playBtn.addEventListener('click', () => {
+        if (playing){
+            playing = false;
+            clearInterval(playTimer);
+            playBtn.textContent = '开始演示';
+            return;
+        }
+        playing = true;
+        playBtn.textContent = '暂停演示';
+        if (parseInt(slider.value) >= parseInt(slider.max)) slider.value = 0;
+        playTimer = setInterval(() => {
+            let v = parseInt(slider.value) + 1;
+            slider.value = v;
+            renderStep(v);
+            if (v >= parseInt(slider.max)){
+                clearInterval(playTimer);
+                playing = false;
+                playBtn.textContent = '重新演示';
+            }
+        }, 180);
+    });
+
+    resetBtn.addEventListener('click', () => {
+        if (playing){ clearInterval(playTimer); playing = false; playBtn.textContent = '开始演示'; }
+        genNoise();
+        slider.value = 0;
+        renderStep(0);
+    });
+})();
+
+/* ========== 文本编码器交互演示 ========== */
+(function(){
+    const input = document.getElementById('tedInput');
+    const btn = document.getElementById('tedAnalyze');
+    const result = document.getElementById('tedResult');
+
+    // 关键词库：用于从输入文本中识别各维度
+    const keywordMap = {
+        '主体': ['女孩','男孩','少年','柯基','猫','狗','飞船','鹦鹉','战士','小动物','松鼠','兔子','人'],
+        '动作': ['奔跑','飞翔','跳跃','穿越','组装','发现','起飞','移动','飘动','旋转'],
+        '场景': ['麦田','森林','雪地','星云','教室','海洋','天空','云海','星球','松树林','花丛'],
+        '镜头': ['广角','仰角','中景','跟拍','特写','全景','推进','拉远','一镜到底'],
+        '光线': ['暖光','金色','霓虹','阳光','月光','自然光','蓝色','紫色','日落','清晨','夕阳'],
+        '风格': ['动漫','科幻','写实','摄影','油画','动漫风格','动漫风','4K','高细节','治愈','奇幻']
+    };
+
+    // 默认提取值（当关键词未匹配时使用）
+    const defaultValues = {
+        '主体': '画面主体',
+        '动作': '动态行为',
+        '场景': '环境背景',
+        '镜头': '镜头语言',
+        '光线': '光影氛围',
+        '风格': '艺术风格'
+    };
+
+    function analyze(text){
+        const found = {};
+        for (const [dim, keywords] of Object.entries(keywordMap)){
+            let matched = '';
+            for (const kw of keywords){
+                if (text.includes(kw)){
+                    // 尝试提取包含关键词的短语（前后各取几个字）
+                    const idx = text.indexOf(kw);
+                    const start = Math.max(0, idx - 2);
+                    const end = Math.min(text.length, idx + kw.length + 4);
+                    matched = text.substring(start, end).replace(/[，。、！]/g, '');
+                    break;
+                }
+            }
+            found[dim] = matched || defaultValues[dim];
+        }
+        return found;
+    }
+
+    btn.addEventListener('click', () => {
+        const text = input.value.trim();
+        if (!text){
+            result.innerHTML = '<div class="ted-empty">请先输入一段描述文字</div>';
+            return;
+        }
+        const dims = analyze(text);
+        let html = '<div class="ted-tags">';
+        for (const [dim, val] of Object.entries(dims)){
+            html += '<div class="ted-tag"><span class="tt-label">' + dim + '</span><span class="tt-value">' + val + '</span></div>';
+        }
+        html += '</div>';
+        result.innerHTML = html;
+    });
+
+    // 回车键触发分析
+    input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') btn.click();
+    });
+})();
+
+/* ========== 解码器交互演示（马赛克放大版） ========== */
+(function(){
+    const canvas = document.getElementById('decoderCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+    const slider = document.getElementById('decoderSlider');
+    const display = document.getElementById('decoderDisplay');
+    const label = document.getElementById('decoderLabel');
+    const playBtn = document.getElementById('decoderPlay');
+    const resetBtn = document.getElementById('decoderReset');
+
+    // 目标图像：月光下的小猫（与扩散模型演示一致）
+    const target = document.createElement('canvas');
+    target.width = W; target.height = H;
+    const tctx = target.getContext('2d');
+
+    function drawTarget(){
+        // 夜空渐变
+        const sky = tctx.createLinearGradient(0, 0, 0, H);
+        sky.addColorStop(0, '#0f172a');
+        sky.addColorStop(0.55, '#312e81');
+        sky.addColorStop(1, '#1e3a8a');
+        tctx.fillStyle = sky;
+        tctx.fillRect(0, 0, W, H);
+
+        // 星星
+        tctx.fillStyle = '#fff';
+        for (let i = 0; i < 40; i++){
+            const x = Math.random() * W, y = Math.random() * H * 0.6;
+            const r = Math.random() * 1.6 + 0.4;
+            tctx.globalAlpha = Math.random() * 0.7 + 0.3;
+            tctx.beginPath(); tctx.arc(x, y, r, 0, Math.PI * 2); tctx.fill();
+        }
+        tctx.globalAlpha = 1;
+
+        // 月亮
+        const mx = W * 0.74, my = H * 0.26;
+        const moonGrad = tctx.createRadialGradient(mx, my, 10, mx, my, 70);
+        moonGrad.addColorStop(0, '#fef9c3');
+        moonGrad.addColorStop(1, 'rgba(254,249,195,0)');
+        tctx.fillStyle = moonGrad;
+        tctx.beginPath(); tctx.arc(mx, my, 70, 0, Math.PI * 2); tctx.fill();
+        tctx.fillStyle = '#fef9c3';
+        tctx.beginPath(); tctx.arc(mx, my, 28, 0, Math.PI * 2); tctx.fill();
+
+        // 地面
+        tctx.fillStyle = '#0f172a';
+        tctx.fillRect(0, H * 0.82, W, H * 0.18);
+        tctx.fillStyle = '#1e293b';
+        tctx.fillRect(0, H * 0.82, W, 4);
+
+        // 小猫剪影
+        tctx.fillStyle = '#000';
+        const cx = W * 0.38, cy = H * 0.78;
+        tctx.beginPath(); tctx.ellipse(cx, cy, 55, 38, 0, 0, Math.PI * 2); tctx.fill();
+        tctx.beginPath(); tctx.arc(cx + 55, cy - 52, 28, 0, Math.PI * 2); tctx.fill();
+        // 耳朵
+        tctx.beginPath();
+        tctx.moveTo(cx + 38, cy - 72);
+        tctx.lineTo(cx + 48, cy - 98);
+        tctx.lineTo(cx + 58, cy - 72);
+        tctx.closePath(); tctx.fill();
+        tctx.beginPath();
+        tctx.moveTo(cx + 62, cy - 72);
+        tctx.lineTo(cx + 72, cy - 98);
+        tctx.lineTo(cx + 80, cy - 68);
+        tctx.closePath(); tctx.fill();
+        // 尾巴
+        tctx.beginPath();
+        tctx.moveTo(cx - 50, cy - 10);
+        tctx.quadraticCurveTo(cx - 90, cy - 70, cx - 60, cy - 100);
+        tctx.lineWidth = 18; tctx.strokeStyle = '#000';
+        tctx.lineCap = 'round'; tctx.stroke();
+        tctx.lineWidth = 1;
+        // 眼睛
+        tctx.fillStyle = '#fde047';
+        tctx.beginPath(); tctx.arc(cx + 68, cy - 58, 5, 0, Math.PI * 2); tctx.fill();
+        tctx.beginPath(); tctx.arc(cx + 48, cy - 58, 5, 0, Math.PI * 2); tctx.fill();
+    }
+
+    drawTarget();
+
+    // 渲染：根据 progress (0~100) 显示马赛克→高清
+    function render(progress){
+        const pct = progress / 100;
+        // 马赛克块大小：从 40 像素渐变到 1 像素
+        const blockSize = Math.max(1, Math.round(40 * Math.pow(1 - pct, 2)));
+        const cols = Math.ceil(W / blockSize);
+        const rows = Math.ceil(H / blockSize);
+
+        for (let r = 0; r < rows; r++){
+            for (let c = 0; c < cols; c++){
+                // 取该块中心位置的目标颜色
+                const sx = Math.min(c * blockSize + blockSize / 2, W - 1);
+                const sy = Math.min(r * blockSize + blockSize / 2, H - 1);
+                const pixel = tctx.getImageData(Math.floor(sx), Math.floor(sy), 1, 1).data;
+
+                // 在低进度时加入随机噪声，模拟"不确定的潜空间数据"
+                const noiseAmount = (1 - pct) * 80;
+                const nr = Math.max(0, Math.min(255, pixel[0] + (Math.random() - 0.5) * noiseAmount));
+                const ng = Math.max(0, Math.min(255, pixel[1] + (Math.random() - 0.5) * noiseAmount));
+                const nb = Math.max(0, Math.min(255, pixel[2] + (Math.random() - 0.5) * noiseAmount));
+
+                ctx.fillStyle = 'rgb(' + Math.round(nr) + ',' + Math.round(ng) + ',' + Math.round(nb) + ')';
+                ctx.fillRect(c * blockSize, r * blockSize, blockSize, blockSize);
+            }
+        }
+
+        // 更新显示文字
+        display.textContent = progress + '%';
+        if (progress <= 5) label.textContent = '潜空间 · 超小马赛克';
+        else if (progress <= 20) label.textContent = '开始放大 · 还是马赛克';
+        else if (progress <= 50) label.textContent = '逐渐清晰 · 轮廓浮现';
+        else if (progress <= 80) label.textContent = '细节丰富 · 接近完成';
+        else label.textContent = '高清画面 · 解码完成！';
+    }
+
+    render(1);
+
+    slider.addEventListener('input', () => render(parseInt(slider.value)));
+
+    let playing = false;
+    let playTimer = null;
+    playBtn.addEventListener('click', () => {
+        if (playing){
+            playing = false;
+            clearInterval(playTimer);
+            playBtn.textContent = '自动播放';
+            return;
+        }
+        playing = true;
+        playBtn.textContent = '暂停';
+        if (parseInt(slider.value) >= 100) slider.value = 0;
+        playTimer = setInterval(() => {
+            let v = parseInt(slider.value) + 1;
+            slider.value = v;
+            render(v);
+            if (v >= 100){
+                clearInterval(playTimer);
+                playing = false;
+                playBtn.textContent = '重新播放';
+            }
+        }, 60);
+    });
+
+    resetBtn.addEventListener('click', () => {
+        if (playing){ clearInterval(playTimer); playing = false; playBtn.textContent = '自动播放'; }
+        slider.value = 1;
+        render(1);
+    });
+})();
+
+/* ========== 第三章 案例动画演示 ========== */
+(function(){
+    const scenes = document.querySelectorAll('#caseDisplay img');
+    const thumbs = document.querySelectorAll('#caseThumb, .case-thumb');
+    const thumbEls = document.querySelectorAll('.case-thumb');
+    const stories = [
+        '小女孩在旷野中奔跑，背景有脚步声音。',
+        '镜头拉近到小女孩脸部，小女孩喊了一声"去吧"，鹦鹉开始展翅准备起飞。',
+        '镜头移动到斜向上，鹦鹉飞向空中变身成一个身披金色头盔的飞鸟战士。',
+        '镜头继续推向空中，飞鸟战士在空中放出绚烂的烟花，化身成为一颗闪亮的星。'
+    ];
+    const storyBox = document.getElementById('caseStory');
+    const prevBtn = document.getElementById('casePrev');
+    const nextBtn = document.getElementById('caseNext');
+    const counter = document.getElementById('caseCounter');
+    const badge = document.getElementById('sceneBadge');
+    const videoWrap = document.getElementById('caseVideoWrap');
+    let idx = 0;
+
+    function render(){
+        scenes.forEach((s, i) => s.classList.toggle('active', i === idx));
+        thumbEls.forEach((t, i) => t.classList.toggle('active', i === idx));
+        badge.textContent = '场景 ' + (idx + 1) + ' / 4';
+        counter.textContent = (idx + 1) + ' / 4';
+        // 故事文字切换
+        storyBox.innerHTML = '<div class="case-story-text active"><span class="step-num">' + String(idx+1).padStart(2,'0') + '</span>' + stories[idx] + '</div>';
+        prevBtn.disabled = idx === 0;
+        // 最后一步显示视频
+        if (idx === 3){
+            nextBtn.textContent = '观看视频';
+        } else {
+            nextBtn.textContent = '下一步';
+            videoWrap.classList.remove('show');
+        }
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (idx < 3){
+            idx++;
+            render();
+        } else {
+            // 显示视频
+            videoWrap.classList.add('show');
+            nextBtn.disabled = true;
+            nextBtn.textContent = '已展示视频';
+            setTimeout(() => videoWrap.scrollIntoView({behavior:'smooth', block:'center'}), 100);
+        }
+    });
+    prevBtn.addEventListener('click', () => {
+        if (idx > 0){
+            idx--;
+            nextBtn.disabled = false;
+            render();
+        }
+    });
+    // 缩略图点击
+    thumbEls.forEach((t, i) => {
+        t.addEventListener('click', () => {
+            idx = i;
+            nextBtn.disabled = false;
+            render();
+        });
+    });
+    render();
+})();
+
+/* ========== 第四章 工具交互卡片 ========== */
+(function(){
+    const tabs = document.querySelectorAll('.tool-tab');
+    const left = document.getElementById('toolLeft');
+    const right = document.getElementById('toolRight');
+
+    const toolData = {
+        asset: {
+            title: '添加资产',
+            desc: '把你准备好的图片、视频、音频素材上传到工作区，作为创作的"原材料"。',
+            feats: ['支持拖拽上传图片与视频','素材可在多个节点间复用','统一管理，随时调用'],
+            showRatio: true
+        },
+        txt2img: {
+            title: '文生图',
+            desc: '输入一段文字描述，AI 自动生成对应图像。这是创作的起点。',
+            feats: ['支持中文提示词','可选风格、比例','一次生成多张供挑选'],
+            showRatio: true
+        },
+        txt2video: {
+            title: '文生视频',
+            desc: '直接用文字描述场景，AI 生成一段视频，无需先有图片。',
+            feats: ['文字直接出视频','可设时长 5s / 10s','适合快速原型'],
+            showRatio: true
+        },
+        edit: {
+            title: '视频编辑',
+            desc: '对生成的视频进行后期处理：裁剪、加字幕、配音，一气呵成。',
+            feats: ['裁剪与拼接','自动字幕','配音与背景音'],
+            showRatio: false
+        }
+    };
+
+    const ratioBoxes = () => document.querySelectorAll('.ratio-box');
+    const ratioBtns = () => document.querySelectorAll('.ratio-btn');
+    const ratioInfo = document.getElementById('ratioInfo');
+    const ratioInfoMap = {
+        '916': '9:16 竖屏 · 适合手机短视频、抖音/快手',
+        '169': '16:9 横屏 · 适合电脑/电视、B站/YouTube',
+        '5s': '5s 时长 · 单次生成的视频长度，可拼接更长'
+    };
+
+    function renderTool(key){
+        const d = toolData[key];
+        left.innerHTML = '<h3>' + d.title + '</h3>' +
+            '<p>' + d.desc + '</p>' +
+            '<ul class="tool-features">' + d.feats.map(f => '<li>' + f + '</li>').join('') + '</ul>';
+        if (d.showRatio){
+            right.style.display = '';
+            right.innerHTML =
+                '<div class="ratio-btn-row" id="ratioRow">' +
+                  '<div class="ratio-btn active" data-ratio="916">9:16 竖屏</div>' +
+                  '<div class="ratio-btn" data-ratio="169">16:9 横屏</div>' +
+                  '<div class="ratio-btn" data-ratio="5s">5s 时长</div>' +
+                '</div>' +
+                '<div class="ratio-visual" id="ratioVisual">' +
+                  '<div class="ratio-box active" data-ratio="916" style="width:90px;height:160px">9:16</div>' +
+                  '<div class="ratio-box" data-ratio="169" style="width:160px;height:90px">16:9</div>' +
+                '</div>' +
+                '<div class="ratio-info" id="ratioInfo">9:16 竖屏 · 适合手机短视频、抖音/快手</div>';
+            bindRatio();
+        } else {
+            right.style.display = 'flex';
+            right.style.flexDirection = 'column';
+            right.style.alignItems = 'center';
+            right.style.justifyContent = 'center';
+            right.innerHTML =
+                '<div style="text-align:center;color:var(--text-muted)">' +
+                '<div style="font-size:3rem;margin-bottom:14px">✂️</div>' +
+                '<div style="font-weight:700;color:var(--dark);margin-bottom:8px">裁剪 · 字幕 · 配音</div>' +
+                '<div style="font-size:.9rem;max-width:260px">在时间轴上自由编辑，让视频更完整</div>' +
+                '</div>';
+        }
+    }
+
+    function bindRatio(){
+        const btns = document.querySelectorAll('.ratio-btn');
+        const boxes = document.querySelectorAll('.ratio-box');
+        const info = document.getElementById('ratioInfo');
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const r = btn.dataset.ratio;
+                btns.forEach(b => b.classList.toggle('active', b === btn));
+                boxes.forEach(b => b.classList.toggle('active', b.dataset.ratio === r));
+                info.textContent = ratioInfoMap[r];
+            });
+        });
+    }
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.toggle('active', t === tab));
+            renderTool(tab.dataset.tool);
+        });
+    });
+
+    // 初始绑定
+    bindRatio();
+})();
+
+/* ========== 创意启发卡片展开 ========== */
+document.querySelectorAll('.idea-card').forEach(card => {
+    card.addEventListener('click', function(e){
+        // 防止点击内部链接时触发
+        if (e.target.tagName === 'A') return;
+        this.classList.toggle('expanded');
+    });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.env
+*.egg-info/
+
+# 资产文件 - 所有生成的内容都不上传
+assets/*
+!assets/.gitkeep
+
+# 测试文件
+test_qwen_video.mp4
+check_video.py
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# 系统文件
+Thumbs.db
+*.log
+
+# 临时文件
+*.tmp
+*.bak
